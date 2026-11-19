@@ -1,0 +1,20 @@
+{
+  "name": "cinetrack-design-patterns",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CineTrack - GoF tasarım kalıplarıyla film ve dizi takip uygulaması",
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "npm run build && npm start",
+    "start": "node server/server.mjs",
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "check": "npm run test"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
