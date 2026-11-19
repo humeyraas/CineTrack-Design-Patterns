@@ -1,10 +1,11 @@
 # CineTrack 🎬
 
-CineTrack, film ve dizileri keşfetmeyi ve kişisel izleme listesinde takip etmeyi sağlayan bir web uygulamasıdır. Yapım bilgilerini demo kataloğundan veya isteğe bağlı olarak TMDB API üzerinden alır.
+CineTrack, film ve dizileri keşfetmeyi ve kişisel izleme listesinde takip etmeyi sağlayan bir web uygulamasıdır. TMDB API üzerinden güncel yapımları, afişleri ve oyuncu kadrolarını görüntüler; API erişimi olmadığında örnek katalogla çalışabilir.
 
 ## Özellikler
 
-- Film ve dizi arama, yapım detaylarını ve oyuncu bilgilerini görüntüleme
+- TMDB üzerinden film/dizi arama, haftanın öne çıkan yapımlarını görüntüleme ve sayfalar arasında gezinme
+- Yapımların afişlerini, özetlerini, puanlarını ve oyuncu fotoğraflarını görüntüleme
 - Kişisel izleme listesine ekleme ve listeden çıkarma
 - İzleme durumlarını takip etme ve kişisel puanlama
 - Listeyi eklenme tarihi, kişisel puan veya isme göre sıralama
@@ -12,7 +13,6 @@ CineTrack, film ve dizileri keşfetmeyi ve kişisel izleme listesinde takip etme
 - Tarayıcıda yerel veri saklama (`localStorage`)
 - API anahtarı olmadan örnek verilerle çalışabilen demo modu
 
-> İlk sürümde sınırlı sayıda örnek yapım bulunmaktadır. TMDB API bağlantısı ve izleme listesi deneyimi sonraki sürümlerde geliştirilebilir.
 
 ## Kullanılan teknolojiler
 
@@ -35,7 +35,15 @@ npm run dev
 
 Demo modu için API anahtarı gerekli değildir.
 
-**TMDB kullanımı (isteğe bağlı):** `.env.example` dosyasını `.env` adıyla kopyalayın ve `TMDB_TOKEN` alanına kendi TMDB Read Access Token değerinizi yazın. `.env` dosyasını depoya yüklemeyin; `.gitignore` içinde tutulur.
+### TMDB bağlantısını etkinleştirme
+
+1. [TMDB](https://www.themoviedb.org/) hesabı oluşturun ve **Settings → API** sayfasından API erişimi alın.
+2. Projenin kökündeki `.env.example` dosyasını kopyalayın; kopyanın adını **`.env`** yapın.
+3. `.env` içindeki `TMDB_TOKEN=` satırının sonuna **API Read Access Token** değerinizi yapıştırın. Sadece token metnini girin; `Bearer` yazmayın.
+4. Açık sunucuyu terminalde `Ctrl+C` ile durdurup `npm run dev` komutuyla yeniden başlatın.
+5. Ana sayfada **TMDB canlı** yazmalıdır. Boş aramada haftanın öne çıkan yapımları; bir kelime aratınca gerçek film/dizi sonuçları gelir.
+
+`.env` dosyasını GitHub'a **yüklemeyin**. Dosya `.gitignore` içinde yok sayılır. Token boş bırakılırsa uygulama otomatik olarak demo moduna geçer. Gerçek TMDB verileri çekilirken internet bağlantısı gerekir.
 
 ## Test
 
@@ -49,11 +57,13 @@ Bu komut TypeScript projesini derler ve `tests/patterns.test.mjs` testlerini ça
 
 **Elle kontrol edilebilecek senaryolar:**
 
-1. Uygulamayı açın; demo kataloğundaki yapımları arayın.
+1. Uygulamayı açın; token yoksa demo kataloğunda arama yapın, token varsa haftalık öne çıkan yapımları görüntüleyin.
 2. Bir yapımı izleme listesine ekleyin ve listeden kaldırın.
 3. Liste sıralamasını değiştirin; kartların seçilen kurala göre sıralandığını kontrol edin.
 4. Liste değiştiğinde istatistik ve işlem geçmişi alanlarını inceleyin.
 5. Sayfayı yenileyin; izleme listesindeki kaydın korunup korunmadığını kontrol edin.
+6. TMDB tokenı ile film arayın, afişi ve detay ekranındaki oyuncu fotoğraflarını kontrol edin.
+7. Arama sonuçlarında **Sonraki** ve **Önceki** sayfa düğmelerini deneyin.
 
 ## Tasarım kalıpları
 
@@ -82,4 +92,4 @@ CineTrack/
 
 ## Veri kaynağı
 
-Film ve dizi verileri için isteğe bağlı olarak [TMDB API](https://developer.themoviedb.org/docs/getting-started) kullanılır. TMDB bağlantısı etkinse: *This product uses the TMDB API but is not endorsed or certified by TMDB.*
+Film, dizi, afiş ve oyuncu verileri [TMDB API](https://developer.themoviedb.org/docs/getting-started) üzerinden sağlanır. *This product uses the TMDB API but is not endorsed or certified by TMDB.*

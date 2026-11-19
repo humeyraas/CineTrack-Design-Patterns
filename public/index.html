@@ -36,6 +36,7 @@
       <div class="section-top"><div><span class="eyebrow">YENİ BİR ŞEYLER BUL</span><h2>Keşfet</h2><p>Film ve dizileri ara, detaylarını incele, koleksiyonuna ekle.</p></div></div>
       <div class="toolbar"><label class="search-wrap"><span>⌕</span><input id="search-input" type="search" placeholder="Film veya dizi ara..." autocomplete="off" aria-label="Film veya dizi ara" /></label><select id="media-filter" aria-label="Yapım türü"><option value="all">Tüm yapımlar</option><option value="movie">Filmler</option><option value="tv">Diziler</option></select><button class="secondary-btn" id="search-button">Ara</button></div>
       <div id="catalog-message" class="subtle-message" aria-live="polite"></div><div id="catalog-grid" class="media-grid"></div>
+      <div id="pager" class="pager hidden"><button class="secondary-btn" id="page-prev">← Önceki</button><span id="page-indicator" aria-live="polite">1 / 1</span><button class="secondary-btn" id="page-next">Sonraki →</button></div>
     </section>
     <section class="content-section hidden" id="watchlist-section">
       <div class="section-top"><div><span class="eyebrow">KİŞİSEL ARŞİVİN</span><h2>İzleme listem</h2><p>İzleme durumlarını ve kişisel puanlarını düzenle.</p></div><label class="select-label">Sırala <select id="sort-select"><option value="newest">En son eklenen</option><option value="rating">Puanım (yüksekten düşüğe)</option><option value="title">İsme göre A-Z</option></select></label></div>
@@ -46,7 +47,7 @@
       <div class="analytics-layout"><article class="info-panel"><h3>İzleme durumları</h3><div id="status-bars" class="status-bars"></div></article><article class="info-panel"><h3>Son işlemler</h3><div id="activity-feed" class="activity-feed"><p class="empty-small">Henüz işlem yok.</p></div></article></div>
     </section>
   </main>
-  <footer class="footer shell"><p>✦ CineTrack — Tasarım Kalıpları Dönem Projesi</p><p>Film/dizi verileri: demo katalog veya <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer">TMDB</a>. Bu ürün TMDB tarafından onaylanmamış veya sertifikalandırılmamıştır.</p></footer>
+  <footer class="footer shell"><p>✦ CineTrack — Film ve dizi arşivin</p><div class="tmdb-attribution"><a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer" aria-label="TMDB veri kaynağı"><img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg" alt="TMDB" loading="lazy" /></a><span>This product uses the TMDB API but is not endorsed or certified by TMDB.</span></div></footer>
   <dialog class="details-modal" id="details-modal"><button class="close-modal" id="close-modal" aria-label="Kapat">✕</button><div id="details-content"></div></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>

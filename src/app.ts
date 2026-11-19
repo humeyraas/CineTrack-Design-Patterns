@@ -20,11 +20,12 @@ const activity = new ActivityLogObserver(renderActivity);
 watchlist.attach(stats);
 watchlist.attach(activity);
 let searchResults: MediaDetails[] = [];
+let currentPage = 1;
+let totalPages = 1;
+let searchRequestId = 0;
 let activeFilter = 'all';
 let activeView: 'discover' | 'watchlist' | 'stats' = 'discover';
 let toastTimeout = 0;
-stats.recalculate(watchlist.getItems());
-
 const escapeHTML = (value: string): string => value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char] || char);
 const labelStatus = (v: WatchStatus): string => ({ planned: 'İzleyeceğim', watching: 'İzliyorum', completed: 'Tamamladım' })[v];
 const toKey = (m: MediaDetails): string => `${m.kind}:${m.id}`;
@@ -61,6 +62,10 @@ function mediaCard(details: MediaDetails, listMode: boolean): string {
 function renderDiscover(): void {
   const filtered = searchResults.filter(m => activeFilter === 'all' || m.kind === activeFilter);
   $('catalog-grid').innerHTML = filtered.length ? filtered.map(m => mediaCard(m, false)).join('') : '<div class="empty-state"><span>⌕</span><h3>Sonuç bulunamadı</h3><p>Başka bir film veya dizi aramayı dene.</p></div>';
+  $('pager').classList.toggle('hidden', totalPages <= 1);
+  $<HTMLButtonElement>('page-prev').disabled = currentPage <= 1;
+  $<HTMLButtonElement>('page-next').disabled = currentPage >= totalPages;
+  $('page-indicator').textContent = `${currentPage} / ${totalPages}`;
 }
 function renderWatchlist(): void {
   const items = sorter.sort(watchlist.getItems()); // Strategy, davranışın çalışma anında değiştirilmesi
@@ -88,16 +93,27 @@ function setView(view: typeof activeView): void {
   if (view === 'watchlist') renderWatchlist();
   if (view === 'stats') { stats.recalculate(watchlist.getItems()); renderActivity(activity.getEntries()); }
 }
-async function runSearch(): Promise<void> {
+async function runSearch(page = 1): Promise<void> {
+  const requestId = ++searchRequestId;
   const query = ($<HTMLInputElement>('search-input').value || '').trim();
   $('catalog-message').textContent = 'Yapımlar yükleniyor…';
   try {
-    searchResults = await catalog.search(query); // Adapter arayüzünden arama
-    $('catalog-message').textContent = `${searchResults.length} yapım gösteriliyor`;
+    const response = await catalog.searchPage(query, page); // Adapter: dış API -> ortak model
+    if (requestId !== searchRequestId) return;
+    searchResults = response.items;
+    currentPage = response.page;
+    totalPages = response.totalPages;
+    $('catalog-message').textContent = query
+      ? `“${query}” araması · ${searchResults.length} yapım · Sayfa ${currentPage}`
+      : `Bu haftanın öne çıkan film ve dizileri · Sayfa ${currentPage}`;
     renderDiscover();
+    if (page > 1) $('discover-section').scrollIntoView({ behavior: 'smooth' });
   } catch (error) {
+    if (requestId !== searchRequestId) return;
     searchResults = [];
-    $('catalog-message').textContent = 'Veriler alınamadı. Bağlantıyı kontrol edip tekrar dene.';
+    currentPage = 1;
+    totalPages = 1;
+    $('catalog-message').textContent = error instanceof Error ? error.message : 'Veriler alınamadı.';
     renderDiscover();
     console.error(error);
   }
@@ -115,8 +131,15 @@ async function showDetails(key: string): Promise<void> {
   const dialog = $<HTMLDialogElement>('details-modal');
   if (!dialog.open) dialog.showModal();
   try {
-    const cast = await catalog.getCast(details.kind, details.id);
-    $('cast-list').textContent = cast.length ? cast.join(' · ') : 'Oyuncu bilgisi bulunamadı.';
+    const cast = await catalog.getCastMembers(details.kind, details.id);
+    // API'den gelen metinler escapeHTML ile korunur; profil yolları doğrulanır.
+    $('cast-list').innerHTML = cast.length
+      ? `<div class="cast-grid">${cast.map(actor => {
+          const photo = actor.profilePath && /^\/[a-zA-Z0-9_-]+\.(?:jpg|jpeg|png|webp)$/i.test(actor.profilePath)
+            ? `https://image.tmdb.org/t/p/w185${actor.profilePath}` : null;
+          return `<div class="cast-member">${photo ? `<img src="${photo}" alt="${escapeHTML(actor.name)}" loading="lazy" />` : '<div class="cast-placeholder">★</div>'}<strong>${escapeHTML(actor.name)}</strong><small>${escapeHTML(actor.character)}</small></div>`;
+        }).join('')}</div>`
+      : 'Oyuncu bilgisi bulunamadı.';
   } catch { $('cast-list').textContent = 'Oyuncu bilgisi alınamadı.'; }
 }
 
@@ -152,8 +175,10 @@ document.addEventListener('change', event => {
     if (watchlist.setRating(key, score)) notice('Puanın kaydedildi.');
   }
 });
-$('search-button').addEventListener('click', () => void runSearch());
-$<HTMLInputElement>('search-input').addEventListener('keydown', event => { if (event.key === 'Enter') void runSearch(); });
+$('search-button').addEventListener('click', () => void runSearch(1));
+$<HTMLInputElement>('search-input').addEventListener('keydown', event => { if (event.key === 'Enter') void runSearch(1); });
+$('page-prev').addEventListener('click', () => { if (currentPage > 1) void runSearch(currentPage - 1); });
+$('page-next').addEventListener('click', () => { if (currentPage < totalPages) void runSearch(currentPage + 1); });
 $<HTMLSelectElement>('media-filter').addEventListener('change', event => {
   activeFilter = (event.currentTarget as HTMLSelectElement).value;
   renderDiscover();
@@ -173,9 +198,12 @@ async function bootstrap(): Promise<void> {
   try {
     const mode = await catalog.getMode();
     $('mode-badge').textContent = mode === 'demo' ? '● Demo mod' : '● TMDB canlı';
-    if (mode === 'tmdb') $<HTMLInputElement>('search-input').value = 'Interstellar';
+    // Boş arama canlı modda haftalık öne çıkan yapımları getirir.
   } catch { $('mode-badge').textContent = '● Bağlantı kontrol ediliyor'; }
   setView('discover');
   await runSearch();
 }
+// UI yardımcıları tanımlandıktan sonra ilk istatistikleri çiz.
+// Başlangıçta kayıtlı izleme listesi varsa erken çağrı TDZ hatasına yol açıyordu.
+stats.recalculate(watchlist.getItems());
 void bootstrap();

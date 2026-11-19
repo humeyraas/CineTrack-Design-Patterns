@@ -1,6 +1,6 @@
 {
   "name": "cinetrack-design-patterns",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "private": true,
   "description": "CineTrack - GoF tasarım kalıplarıyla film ve dizi takip uygulaması",
   "type": "module",

@@ -9,3 +9,20 @@
 @media(max-width:1000px){.media-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }.poster { height:240px; }.topbar-inner { gap:18px; }}
 @media(max-width:800px){.hero-visual { display:none; }.hero-copy { width:100%; }.hero { min-height:330px; }.media-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }.footer { flex-direction:column; }.analytics-layout { grid-template-columns:1fr; }.mode-badge { display:none; }}
 @media(max-width:580px){.shell { width:calc(100% - 32px); }.topbar-inner { flex-wrap:wrap; padding:11px 0; gap:4px; }.topnav { width:100%; justify-content:space-between; }.nav-link { padding:9px 9px; font-size:12px; }.brand { font-size:20px; }.hero { min-height:290px; padding:40px 0; }.hero h1 { font-size:45px; }.hero p { font-size:13px; }.stat-strip strong { font-size:24px; }.stat-strip small { font-size:10px; }.section-top { align-items:start; flex-direction:column; }.content-section { padding:38px 0; }.section-top h2 { font-size:29px; }.media-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }.poster { height:205px; }.card-body { padding:10px; }.card-body p { font-size:11px; }.title-click { font-size:14px; }.toolbar { flex-wrap:wrap; }.search-wrap { flex-basis:100%; }.toolbar select { flex:1; }.detail-layout { grid-template-columns:1fr; padding:20px; }.detail-poster { display:none; }.details-modal { width:calc(100% - 24px); }.detail-text h2 { font-size:26px; }}
+
+/* TMDB keşif sayfalaması ve oyuncu profilleri */
+.pager { display:flex; align-items:center; justify-content:center; gap:20px; padding:28px 0 4px; }
+.pager span { color:#d3dfed; min-width:70px; text-align:center; font-weight:700; }
+.pager button:disabled { opacity:.35; cursor:not-allowed; }
+.cast-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-top:10px; }
+.cast-member { display:flex; flex-direction:column; gap:4px; min-width:0; }
+.cast-member img,.cast-placeholder { width:100%; aspect-ratio:2/3; object-fit:cover; border-radius:8px; background:#27364a; }
+.cast-placeholder { display:flex; align-items:center; justify-content:center; color:#e2c48b; font-size:28px; }
+.cast-member strong { color:#eef2f7; font-size:11px; line-height:1.4; }
+.cast-member small { color:#8c9cae; font-size:10px; line-height:1.3; }
+@media(max-width:580px){.cast-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.pager{gap:10px}.pager button{padding:9px 12px}}
+
+.tmdb-attribution { display:flex; align-items:center; gap:12px; max-width:600px; }
+.tmdb-attribution img { width:95px; height:auto; display:block; }
+.tmdb-attribution span { line-height:1.5; }
+@media(max-width:580px){.tmdb-attribution{align-items:flex-start; flex-direction:column}}
